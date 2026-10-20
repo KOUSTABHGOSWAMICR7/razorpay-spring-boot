@@ -8,9 +8,11 @@ import com.personalproject.razorpay.payment.gateway.adapter.UpiPaymentAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 @RequiredArgsConstructor
 @Configuration
 public class PaymentAdapterConfig {

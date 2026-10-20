@@ -3,9 +3,11 @@ package com.personalproject.razorpay.payment.gateway.adapter;
 import com.personalproject.razorpay.payment.gateway.PaymentAdapter;
 import com.personalproject.razorpay.payment.gateway.dto.PaymentRequest;
 import com.personalproject.razorpay.payment.gateway.dto.PaymentResult;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class CardPaymentAdapter implements PaymentAdapter {
 
     @Override
