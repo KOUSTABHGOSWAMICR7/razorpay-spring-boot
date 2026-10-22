@@ -118,8 +118,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 }
 
-// open for extension
-// closed for modification
+
 
 
 
