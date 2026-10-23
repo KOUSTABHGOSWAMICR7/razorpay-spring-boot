@@ -31,11 +31,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
     private final PaymentGatewayRouter paymentGatewayRouter;
-    private final PaymentMapper paymentMapper;
     private final PaymentTransitionService paymentTransitionService;
+    private final PaymentMapper paymentMapper;
+
 
     @Override
     @Transactional()
