@@ -1,8 +1,8 @@
-package com.personalproject.razorpay.payment.repository;
+package com.codingshuttle.razorpay.payment.repository;
 
-import com.personalproject.razorpay.common.enums.PaymentStatus;
-import com.personalproject.razorpay.payment.entity.OrderRecord;
-import com.personalproject.razorpay.payment.entity.Payment;
+import com.codingshuttle.razorpay.common.enums.PaymentStatus;
+import com.codingshuttle.razorpay.payment.entity.OrderRecord;
+import com.codingshuttle.razorpay.payment.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

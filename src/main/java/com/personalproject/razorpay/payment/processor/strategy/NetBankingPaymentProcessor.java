@@ -1,10 +1,12 @@
-package com.personalproject.razorpay.payment.processor.strategy;
+package com.codingshuttle.razorpay.payment.processor.strategy;
 
-import com.personalproject.razorpay.common.util.RandomizerUtil;
-import com.personalproject.razorpay.payment.processor.PaymentProcessor;
-import com.personalproject.razorpay.payment.processor.dto.PaymentProcessorRequest;
-import com.personalproject.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import com.codingshuttle.razorpay.common.util.RandomizerUtil;
+import com.codingshuttle.razorpay.payment.processor.PaymentProcessor;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorRequest;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NetBankingPaymentProcessor implements PaymentProcessor {
 
     @Override
@@ -13,7 +15,7 @@ public class NetBankingPaymentProcessor implements PaymentProcessor {
         final String BANK_CODE_FAIL = "BANK_CODE_FAIL";
 
         String bankCode = request.methodDetails() != null ?
-                request.methodDetails().get("BANK").toString() : null;
+                request.methodDetails().get("bank").toString() : null;
 
         // simulation
         if (BANK_CODE_FAIL.equals(bankCode)) {

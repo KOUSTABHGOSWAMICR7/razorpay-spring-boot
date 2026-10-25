@@ -1,7 +1,7 @@
-package com.personalproject.razorpay.payment.repository;
+package com.codingshuttle.razorpay.payment.repository;
 
-import com.personalproject.razorpay.payment.dto.response.OrderResponse;
-import com.personalproject.razorpay.payment.entity.OrderRecord;
+import com.codingshuttle.razorpay.payment.dto.response.OrderResponse;
+import com.codingshuttle.razorpay.payment.entity.OrderRecord;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 

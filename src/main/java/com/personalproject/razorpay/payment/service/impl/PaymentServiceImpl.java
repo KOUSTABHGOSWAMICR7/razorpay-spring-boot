@@ -1,23 +1,23 @@
-package com.personalproject.razorpay.payment.service.impl;
+package com.codingshuttle.razorpay.payment.service.impl;
 
-import com.personalproject.razorpay.common.enums.OrderStatus;
-import com.personalproject.razorpay.common.enums.PaymentEvent;
-import com.personalproject.razorpay.common.enums.PaymentMethod;
-import com.personalproject.razorpay.common.enums.PaymentStatus;
-import com.personalproject.razorpay.common.exception.BusinessRuleViolationException;
-import com.personalproject.razorpay.common.exception.ResourceNotFoundException;
-import com.personalproject.razorpay.payment.dto.request.PaymentInitRequest;
-import com.personalproject.razorpay.payment.dto.response.PaymentResponse;
-import com.personalproject.razorpay.payment.entity.OrderRecord;
-import com.personalproject.razorpay.payment.entity.Payment;
-import com.personalproject.razorpay.payment.gateway.PaymentGatewayRouter;
-import com.personalproject.razorpay.payment.gateway.dto.PaymentRequest;
-import com.personalproject.razorpay.payment.gateway.dto.PaymentResult;
-import com.personalproject.razorpay.payment.mapper.PaymentMapper;
-import com.personalproject.razorpay.payment.repository.OrderRepository;
-import com.personalproject.razorpay.payment.repository.PaymentRepository;
-import com.personalproject.razorpay.payment.service.PaymentService;
-import com.personalproject.razorpay.payment.statemachine.PaymentTransitionService;
+import com.codingshuttle.razorpay.common.enums.OrderStatus;
+import com.codingshuttle.razorpay.common.enums.PaymentEvent;
+import com.codingshuttle.razorpay.common.enums.PaymentMethod;
+import com.codingshuttle.razorpay.common.enums.PaymentStatus;
+import com.codingshuttle.razorpay.common.exception.BusinessRuleViolationException;
+import com.codingshuttle.razorpay.common.exception.ResourceNotFoundException;
+import com.codingshuttle.razorpay.payment.dto.request.PaymentInitRequest;
+import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
+import com.codingshuttle.razorpay.payment.entity.OrderRecord;
+import com.codingshuttle.razorpay.payment.entity.Payment;
+import com.codingshuttle.razorpay.payment.gateway.PaymentGatewayRouter;
+import com.codingshuttle.razorpay.payment.gateway.dto.PaymentRequest;
+import com.codingshuttle.razorpay.payment.gateway.dto.PaymentResult;
+import com.codingshuttle.razorpay.payment.mapper.PaymentMapper;
+import com.codingshuttle.razorpay.payment.repository.OrderRepository;
+import com.codingshuttle.razorpay.payment.repository.PaymentRepository;
+import com.codingshuttle.razorpay.payment.service.PaymentService;
+import com.codingshuttle.razorpay.payment.statemachine.PaymentTransitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
     private final PaymentGatewayRouter paymentGatewayRouter;
-    private final PaymentTransitionService paymentTransitionService;
     private final PaymentMapper paymentMapper;
-
+    private final PaymentTransitionService paymentTransitionService;
 
     @Override
     @Transactional()
@@ -58,6 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(order.getAmount())
                 .status(PaymentStatus.CREATED)
                 .method(request.method())
+                .idempotencyKey(UUID.randomUUID().toString()) //TODO: idempotency
                 .methodDetails(request.methodDetails())
                 .build();
         payment = paymentRepository.save(payment);
@@ -66,6 +66,8 @@ public class PaymentServiceImpl implements PaymentService {
                 request.orderId(), merchantId,
                 order.getAmount(), request.method(),
                 request.methodDetails());
+
+        paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_ATTEMPT);
         PaymentResult result = paymentGatewayRouter.initiate(paymentRequest);
 
         switch (result) {
@@ -117,9 +119,55 @@ public class PaymentServiceImpl implements PaymentService {
 
         return paymentMapper.toResponse(payment);
     }
+
+    @Override
+    @Transactional
+    public void resolveAuthorization(UUID paymentId, boolean approve,
+                                     String bankRef, String errorCode, String errorDescription) {
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
+
+        if (payment.getStatus() != PaymentStatus.AUTHORIZING) {
+            log.warn("Payment is not in Authorizing state, paymentID: {}, status: {}", paymentId, payment.getStatus());
+            return;
+        }
+
+        OrderRecord orderRecord = payment.getOrder();
+
+        if (approve) {
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_SUCCESS);
+            payment.setBankReference(bankRef);
+            payment.setAuthorizedAt(LocalDateTime.now());
+
+            // Auto-capture
+            paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
+            PaymentResult captureResult = paymentGatewayRouter.capture(payment.getMethod(), paymentId);
+
+            if(captureResult instanceof PaymentResult.Success success) {
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
+                payment.setCapturedAt(LocalDateTime.now());
+                orderRecord.setOrderStatus(OrderStatus.PAID);
+            } else if (captureResult instanceof  PaymentResult.Failure failure){
+                paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorDescription(failure.errorDescription());
+            }
+        } else {
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
+            payment.setErrorCode(errorCode);
+            payment.setErrorDescription(errorDescription);
+        }
+
+        paymentRepository.save(payment);
+        orderRepository.save(orderRecord);
+
+        // TODO: send an outbox (kafka event)
+    }
 }
 
-
+// open for extension
+// closed for modification
 
 
 

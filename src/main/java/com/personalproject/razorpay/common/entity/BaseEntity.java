@@ -1,4 +1,4 @@
-package com.personalproject.razorpay.common.entity;
+package com.codingshuttle.razorpay.common.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

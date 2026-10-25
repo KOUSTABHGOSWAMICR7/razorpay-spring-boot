@@ -1,9 +1,11 @@
-package com.personalproject.razorpay.merchant.repository;
+package com.codingshuttle.razorpay.merchant.repository;
 
-import com.personalproject.razorpay.merchant.entity.AppUser;
+import com.codingshuttle.razorpay.merchant.entity.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AppUserRepository extends JpaRepository<AppUser, UUID> {
+    Optional<AppUser> findByEmail(String email);
 }

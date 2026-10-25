@@ -1,10 +1,10 @@
-package com.personalproject.razorpay.payment.gateway.adapter;
+package com.codingshuttle.razorpay.payment.gateway.adapter;
 
-import com.personalproject.razorpay.payment.gateway.PaymentAdapter;
-import com.personalproject.razorpay.payment.gateway.dto.PaymentRequest;
-import com.personalproject.razorpay.payment.gateway.dto.PaymentResult;
-import com.personalproject.razorpay.payment.processor.dto.PaymentProcessorResponse;
-import com.personalproject.razorpay.vault.service.VaultService;
+import com.codingshuttle.razorpay.payment.gateway.PaymentAdapter;
+import com.codingshuttle.razorpay.payment.gateway.dto.PaymentRequest;
+import com.codingshuttle.razorpay.payment.gateway.dto.PaymentResult;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import com.codingshuttle.razorpay.vault.service.VaultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +33,6 @@ public class CardPaymentAdapter implements PaymentAdapter {
 
     @Override
     public PaymentResult capture(UUID paymentId) {
-        return null;
+        return new PaymentResult.Success("CARD_REF");
     }
 }

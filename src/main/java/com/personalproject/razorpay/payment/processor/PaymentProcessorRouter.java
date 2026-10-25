@@ -1,16 +1,18 @@
-package com.personalproject.razorpay.payment.processor;
+package com.codingshuttle.razorpay.payment.processor;
 
-import com.personalproject.razorpay.common.enums.PaymentMethod;
-import com.personalproject.razorpay.payment.processor.dto.PaymentProcessorRequest;
-import com.personalproject.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import com.codingshuttle.razorpay.common.enums.PaymentMethod;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorRequest;
+import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentProcessorRouter {
 
-    private Map<PaymentMethod, PaymentProcessor> paymentProcessors;
+    private final Map<PaymentMethod, PaymentProcessor> paymentProcessors;
 
     public PaymentProcessorResponse charge(PaymentProcessorRequest request) {
         PaymentProcessor processor = paymentProcessors.get(request.method());

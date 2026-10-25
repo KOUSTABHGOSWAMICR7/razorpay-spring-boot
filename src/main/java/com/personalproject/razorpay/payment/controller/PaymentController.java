@@ -1,8 +1,8 @@
-package com.personalproject.razorpay.payment.controller;
+package com.codingshuttle.razorpay.payment.controller;
 
-import com.personalproject.razorpay.payment.dto.request.PaymentInitRequest;
-import com.personalproject.razorpay.payment.dto.response.PaymentResponse;
-import com.personalproject.razorpay.payment.service.PaymentService;
+import com.codingshuttle.razorpay.payment.dto.request.PaymentInitRequest;
+import com.codingshuttle.razorpay.payment.dto.response.PaymentResponse;
+import com.codingshuttle.razorpay.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    UUID merchantId = UUID.fromString("1f6caca9-cab9-40cd-a491-a714146e5a55"); //TODO: replace it with MerchantContext
+    UUID merchantId = UUID.fromString("e7763480-0fd3-4382-8902-0a47de5055a7"); //TODO: replace it with MerchantContext
 
     @PostMapping
     public ResponseEntity<PaymentResponse> initiate(@Valid @RequestBody PaymentInitRequest request) {
