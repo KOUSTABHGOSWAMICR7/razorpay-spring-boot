@@ -1,4 +1,4 @@
-package com.codingshuttle.razorpay.merchant.security;
+package com.personalproject.razorpay.merchant.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

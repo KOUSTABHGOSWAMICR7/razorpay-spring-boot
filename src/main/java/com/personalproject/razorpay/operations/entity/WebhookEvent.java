@@ -1,7 +1,7 @@
-package com.codingshuttle.razorpay.operations.entity;
+package com.personalproject.razorpay.operations.entity;
 
-import com.codingshuttle.razorpay.common.entity.BaseEntity;
-import com.codingshuttle.razorpay.common.enums.WebhookEventStatus;
+import com.personalproject.razorpay.common.entity.BaseEntity;
+import com.personalproject.razorpay.common.enums.WebhookEventStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
